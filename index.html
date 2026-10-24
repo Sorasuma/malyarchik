@@ -4,15 +4,26 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Отчёты художников Catwar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap">
 <style>
-:root{color-scheme:dark;--bg:#1a1715;--card:#252120;--tx:#efe9e2;--mu:#a1978c;--ac:#ec8a55;--ac2:#3b2a21;--bd:#3a3531;--ok:#5fc48c;--okbg:#1c3325;--sh:none}
+:root{color-scheme:dark;
+/* палитра с фото: Abyssal Anchorfish Blue / Nightshade / Press Agent / Pencil Sketch / Pearl Pebble / Rustic Earth */
+--bg:#1C282F;--card:#27333B;--bd:#3C454D;--line:#5F6C77;--mu:#9B9B9F;--tx:#DDD8D9;
+--ab:#91674E;--abh:#A37759;--ac:#C79B7B;--ac2:rgba(145,103,78,.22);
+--ok:#9CC5A8;--okbg:rgba(156,197,168,.14);--sh:0 6px 18px rgba(8,14,18,.28)}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-header{background:linear-gradient(135deg,#34201a,#563222);color:#fff;padding:24px 16px 24px;border-bottom:1px solid var(--bd)}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.55 Montserrat,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+input,textarea,button{font-family:inherit}
+header{border-bottom:3px solid var(--ab)}
+.hero{background:var(--bd);line-height:0}
+.hero img{display:block;width:100%;height:clamp(110px,26vw,300px);object-fit:cover;object-position:center}
+.titlebar{background:linear-gradient(135deg,#3C454D,#27333B);padding:18px 16px}
 .w{max-width:1500px;margin:0 auto}
-header .w{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
-h1{font-size:26px;margin:0}
-header p{margin:4px 0 0;opacity:.9}
+.titlebar .w{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+h1{font-size:24px;font-weight:700;letter-spacing:-.01em;margin:0}
+header p{margin:4px 0 0;color:var(--mu);font-size:14px}
 main{max-width:1500px;margin:18px auto 0;padding:0 16px 60px}
 .card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:18px;margin-bottom:16px;box-shadow:var(--sh)}
 .card h3{margin:0 0 12px;font-size:16px}
@@ -21,12 +32,15 @@ input,textarea{width:100%;font:inherit;color:var(--tx);background:var(--bg);bord
 input:focus,textarea:focus{border-color:var(--ac);box-shadow:0 0 0 3px var(--ac2)}
 button{font:inherit;cursor:pointer;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:10px;padding:8px 14px}
 button:hover{border-color:var(--ac)}
-button.p{background:var(--ac);border-color:var(--ac);color:#1a1715;font-weight:600}
+button.p{background:var(--ab);border-color:var(--ab);color:#fff;font-weight:600}
+button.p:hover{background:var(--abh);border-color:var(--abh)}
+button:focus-visible,summary:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
 button.g{background:none;border-style:dashed;color:var(--mu)}
-header button{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.4);color:#fff}
+header button{background:transparent;border-color:var(--line);color:var(--tx)}
+header button:hover{background:var(--ac2)}
 .row{display:flex;gap:10px;flex-wrap:wrap}
 .row>*{flex:1 1 150px}
-.art{border:1px solid var(--bd);border-left:4px solid var(--ac);border-radius:12px;padding:14px;margin:12px 0;background:var(--bg)}
+.art{border:1px solid var(--bd);border-left:4px solid var(--ab);border-radius:12px;padding:14px;margin:12px 0;background:var(--bg)}
 .arthead{display:flex;gap:10px;align-items:flex-end;margin-bottom:10px}
 .arthead>div{flex:0 1 200px}
 .arthead .sp{flex:1}
@@ -54,10 +68,12 @@ details.yr>summary{font-weight:700;font-size:18px;padding:8px 4px}
 details.mo{margin:0 0 4px 16px}
 details.mo>summary{font-weight:600;font-size:15px;padding:6px 4px}
 details.mo>.card{margin:6px 0 6px 18px}
+.cnts{font-size:13px;color:var(--mu);margin:2px 0 8px}
+.cnts:empty{display:none}
 .cnt{font-weight:400;font-size:13px;color:var(--mu);margin-left:10px}
 .bar h2{font-size:18px;margin:0 auto 0 0}
 .tab{border-radius:99px;padding:5px 14px;font-size:14px}
-.tab.on{background:var(--ac2);border-color:var(--ac);color:var(--ac);font-weight:600}
+.tab.on{background:var(--ac2);border-color:var(--ab);color:var(--ac);font-weight:600}
 .item{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
 .item .m{flex:1 1 260px;min-width:0}
 .date{font-weight:700;font-size:16px}
@@ -67,7 +83,7 @@ details.mo>.card{margin:6px 0 6px 18px}
 .acts{display:flex;gap:6px;flex-wrap:wrap}
 .acts button{padding:6px 11px;font-size:13px}
 .empty{text-align:center;color:var(--mu);padding:34px 0}
-#modal,#login{position:fixed;inset:0;background:rgba(20,10,5,.6);display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:20px 12px;z-index:5}
+#modal,#login{position:fixed;inset:0;background:rgba(12,19,23,.75);display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:20px 12px;z-index:5}
 #modal.on,#login.on{display:flex}
 .box{background:var(--card);border-radius:16px;max-width:720px;width:100%;padding:20px;margin:auto}
 .pv{background:var(--bg);border:1px solid var(--bd);border-radius:12px;padding:16px;margin:12px 0}
@@ -79,17 +95,25 @@ details.mo>.card{margin:6px 0 6px 18px}
 .pv .ph{width:140px;height:90px;border:1px dashed var(--mu);border-radius:8px;display:flex;align-items:center;justify-content:center;margin:8px auto;color:var(--mu);font-size:13px}
 .pv img{max-width:220px;max-height:220px;display:block;margin:8px auto}
 .pv a{color:var(--ac);word-break:break-all;font-size:13px}
-.banner{background:var(--ac2);color:var(--ac);border-radius:12px;padding:10px 14px;margin-bottom:16px;font-size:14px}
+.banner{background:var(--ac2);color:var(--ac);border:1px solid rgba(145,103,78,.45);border-radius:12px;padding:10px 14px;margin-bottom:16px;font-size:14px}
 #toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:9px 18px;border-radius:99px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:9}
 #toast.on{opacity:1}
+.cat{position:fixed;left:50%;bottom:64px;z-index:8;pointer-events:none;transform:translateX(-50%);animation:catio 2.7s ease both}
+.cat img{display:block;height:clamp(90px,16vh,140px);width:auto;transform-origin:50% 100%;animation:hop .54s ease-in-out .1s 4}
+@keyframes catio{0%{opacity:0}8%{opacity:1}85%{opacity:1}100%{opacity:0}}
+@keyframes hop{0%,100%{transform:translateY(0) scale(1.07,.92)}50%{transform:translateY(-64px) scale(.96,1.05)}}
+@media(prefers-reduced-motion:reduce){.cat img{animation:none}}
 .mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;min-height:160px}
 </style>
 </head>
 <body>
-<header><div class="w">
-  <div><h1>🐱 Отчёты художников</h1><p>Работы сайтовой команды Catwar: создавайте отчёты, следите за отправкой Маляру</p></div>
-  <button id="authBtn" style="display:none">Войти</button>
-</div></header>
+<header>
+  <div class="hero"><img src="header.webp" alt="" onerror="this.parentNode.remove()"></div>
+  <div class="titlebar"><div class="w">
+    <div><h1>Отчёты художников</h1><p>Работы сайтовой команды Catwar: создавайте отчёты, следите за отправкой Маляру</p></div>
+    <button id="authBtn" style="display:none">Войти</button>
+  </div></div>
+</header>
 
 <main>
   <div class="banner" id="banner" style="display:none"></div>
@@ -107,7 +131,7 @@ details.mo>.card{margin:6px 0 6px 18px}
   <div class="split" id="split" title="Потяните, чтобы изменить ширину. Двойной клик — сбросить"></div>
   <section class="card" id="formCard">
     <h3 id="formTitle">Новый отчёт</h3>
-    <p class="hint" style="margin:-6px 0 12px">Отчёт собирается по единому шаблону. Вид работы нужен только для списка и в отчёт не попадает. Ссылки вставляются в код ровно так, как вы их ввели. Доказательство использования — по желанию: к каждой работе или общее на художника.</p>
+    <p class="hint" style="margin:-6px 0 12px">Отчёт собирается по единому шаблону. Если работ одного вида больше одной, перед ними в отчёте сама появится строка вроде «Фоны х3» (для одной работы строки нет). Ссылки вставляются в код ровно так, как вы их ввели. Доказательство использования — по желанию: к каждой работе или общее на художника.</p>
     <div class="row">
       <div style="flex:0 1 180px"><label for="date">Дата</label><input type="date" id="date"></div>
       <div style="flex:3 1 260px"><label for="note">Заметка (не попадёт в отчёт)</label><input id="note" placeholder="Например: заказ на оформление сайта"></div>
@@ -156,7 +180,7 @@ var SUPABASE_KEY = 'sb_publishable_30jxDVu05W_S9x48kOUakA_IGTFfYW0';   // anon /
   var reports=[], sb=null, session=null, filter='all', editId=null, lastBB='';
   var LS='catwar-reports-v2', ORIGIN='https://catwar.su/';
   var $=function(s){return document.querySelector(s)};
-  var TYPES={'иконка':'иконки','фон':'фоны','шапка':'шапки','баннер':'баннеры','значок':'значки','предмет':'предметы','аватар':'аватары','рамка':'рамки','кнопка':'кнопки','костюм':'костюмы'};
+  var TYPES={'иконка':'иконки','фон':'фоны','шапка':'шапки','баннер':'баннеры','значок':'значки','предмет':'предметы','аватар':'аватары','рамка':'рамки','кнопка':'кнопки','костюм':'костюмы','бот':'боты','иллюстрация':'иллюстрации','обложка':'обложки','стикер':'стикеры','аватарка':'аватарки'};
 
   function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
   function toast(t){var e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(function(){e.classList.remove('on')},2400)}
@@ -188,15 +212,24 @@ var SUPABASE_KEY = 'sb_publishable_30jxDVu05W_S9x48kOUakA_IGTFfYW0';   // anon /
   function proofLabel(p,many){return (many?'доказательства':'доказательство')+' использования'+(p.note?', '+p.note:'')}
   function wImg(w){return String(w.img||w.link||'').trim()}
   function wLink(w){return String(w.link||w.img||'').trim()}
+  function heading(g){
+    var t=String(g.type||'').trim();
+    if(!t||g.list.length<2)return '';
+    var k=t.toLowerCase();
+    return cap(TYPES[k]||t)+' х'+g.list.length;
+  }
 
   function bbcode(r){
     var o='[size=13][b]Отчёт по заказу от сайтовой команды художников[/b] [/size]\n';
     r.artists.forEach(function(a){
       o+='[table=0]\n[tr]\n[td][center][b]Получили работу и установили на сайт:[/b]\n\n';
-      a.works.forEach(function(w){
-        o+='[img]'+wImg(w)+'[/img]\n[url]'+wLink(w)+'[/url]\n';
-        proofs(w.proofs).forEach(function(x){o+='[url='+x.url+']'+proofLabel(x)+'[/url]\n'});
-        o+='\n';
+      groups(a).forEach(function(g){
+        var h=heading(g);if(h)o+=h+'\n\n';
+        g.list.forEach(function(w){
+          o+='[img]'+wImg(w)+'[/img]\n[url]'+wLink(w)+'[/url]\n';
+          proofs(w.proofs).forEach(function(x){o+='[url='+x.url+']'+proofLabel(x)+'[/url]\n'});
+          o+='\n';
+        });
       });
       var gp=proofs(a.proofs);
       if(gp.length){gp.forEach(function(x){o+='[url='+x.url+']'+proofLabel(x,true)+'[/url]\n'});o+='\n'}
@@ -209,11 +242,13 @@ var SUPABASE_KEY = 'sb_publishable_30jxDVu05W_S9x48kOUakA_IGTFfYW0';   // anon /
     var h='<div class="t">Отчёт по заказу от сайтовой команды художников</div>';
     r.artists.forEach(function(a){
       h+='<table><tr><td><b>Получили работу и установили на сайт:</b>';
-      a.works.forEach(function(w){
-        var src=wImg(w);if(!/^https?:\/\//.test(src))src=ORIGIN+src.replace(/^\/+/,'');
-        h+='<div class="w1">'+(w.type?'<div style="opacity:.6;font-size:12px">'+esc(w.type)+'</div>':'')+
-          '<img src="'+esc(src)+'" alt="" referrerpolicy="no-referrer" onerror="this.outerHTML=\'&lt;div class=ph&gt;нет превью&lt;/div&gt;\'">'+
-          '<div>'+A(wLink(w),wLink(w))+'</div>'+proofs(w.proofs).map(function(x){return '<div>'+A(x.url,proofLabel(x))+'</div>'}).join('')+'</div>';
+      groups(a).forEach(function(g){
+        var t=heading(g);if(t)h+='<div class="sub">'+esc(t)+'</div>';
+        g.list.forEach(function(w){
+          var src=wImg(w);if(!/^https?:\/\//.test(src))src=ORIGIN+src.replace(/^\/+/,'');
+          h+='<div class="w1"><img src="'+esc(src)+'" alt="" referrerpolicy="no-referrer" onerror="this.outerHTML=\'&lt;div class=ph&gt;нет превью&lt;/div&gt;\'">'+
+            '<div>'+A(wLink(w),wLink(w))+'</div>'+proofs(w.proofs).map(function(x){return '<div>'+A(x.url,proofLabel(x))+'</div>'}).join('')+'</div>';
+        });
       });
       var gp=proofs(a.proofs);
       if(gp.length)h+='<div class="w1">'+gp.map(function(x){return '<div>'+A(x.url,proofLabel(x,true))+'</div>'}).join('')+'</div>';
@@ -272,6 +307,14 @@ var SUPABASE_KEY = 'sb_publishable_30jxDVu05W_S9x48kOUakA_IGTFfYW0';   // anon /
   }
 
   /* ---------- форма ---------- */
+  function countTypes(works){
+    var order=[],m={};
+    works.forEach(function(w){
+      var t=String(w.type||'').trim();if(!t)return;
+      var k=t.toLowerCase();if(!m[k]){m[k]={name:t,n:0};order.push(k)}m[k].n++;
+    });
+    return order.map(function(k){return cap(m[k].name)+' ×'+m[k].n}).join(' · ');
+  }
   function proofRow(p){
     var d=document.createElement('div');d.className='pr';
     d.innerHTML='<input class="pu" placeholder="Ссылка на доказательство использования"><input class="pn" placeholder="Пояснение (необязательно)"><button class="x g" title="Убрать доказательство" style="padding:8px 0">✕</button>';
@@ -294,7 +337,7 @@ var SUPABASE_KEY = 'sb_publishable_30jxDVu05W_S9x48kOUakA_IGTFfYW0';   // anon /
   }
   function artBlock(a){
     var d=document.createElement('div');d.className='art';
-    d.innerHTML='<div class="arthead"><div><label>ID художника</label><input class="aid" inputmode="numeric" placeholder="12345"></div><span class="sp"></span><button class="g rm" style="padding:6px 10px;font-size:13px">Убрать художника</button></div><div class="wks"></div><div class="gprs"></div>'+
+    d.innerHTML='<div class="arthead"><div><label>ID художника</label><input class="aid" inputmode="numeric" placeholder="12345"></div><span class="sp"></span><button class="g rm" style="padding:6px 10px;font-size:13px">Убрать художника</button></div><div class="wks"></div><div class="cnts"></div><div class="gprs"></div>'+
       '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="g aw" style="padding:6px 12px;font-size:13px">+ Добавить работу</button><button class="g ag" style="padding:6px 12px;font-size:13px">+ Общее доказательство</button></div>'+
       '<label style="margin-top:10px">Приписка после автора (необязательно)</label><input class="atail" placeholder="например: запрошен перенос лога на 1618436">';
     d.querySelector('.aid').value=a?a.id:'';
@@ -305,6 +348,9 @@ var SUPABASE_KEY = 'sb_publishable_30jxDVu05W_S9x48kOUakA_IGTFfYW0';   // anon /
     d.querySelector('.aw').onclick=function(){var last=box.querySelectorAll('.wt');box.appendChild(workRow(null,last.length?last[last.length-1].value:''));box.lastChild.querySelector('.wm').focus()};
     d.querySelector('.ag').onclick=function(){var r=proofRow(null);gp.appendChild(r);r.querySelector('.pu').focus()};
     d.querySelector('.rm').onclick=function(){if(document.querySelectorAll('.art').length>1)d.remove();else resetForm(null)};
+    var cn=d.querySelector('.cnts');
+    function upd(){var ws=[];d.querySelectorAll('.wk .wt').forEach(function(i){ws.push({type:i.value})});var t=countTypes(ws);cn.textContent=t?'Всего по видам: '+t:''}
+    d.addEventListener('input',upd);d.addEventListener('click',function(){setTimeout(upd,0)});upd();
     return d;
   }
   function resetForm(r){
@@ -366,6 +412,7 @@ var SUPABASE_KEY = 'sb_publishable_30jxDVu05W_S9x48kOUakA_IGTFfYW0';   // anon /
     var d=document.createElement('div');d.className='card item';
     d.innerHTML='<div class="m"><div class="date">'+fmt(r.date)+'<span class="badge'+(r.sent?' ok':'')+'">'+(r.sent?'Отправлен Маляру':'Не отправлен')+'</span></div>'+
       '<div class="tags">Художники: '+r.artists.map(function(a){return esc(a.id)+' ('+a.works.length+')'}).join(', ')+' · работ: '+n+'</div>'+
+      (countTypes([].concat.apply([],r.artists.map(function(a){return a.works})))?'<div class="tags">'+esc(countTypes([].concat.apply([],r.artists.map(function(a){return a.works}))))+'</div>':'')+
       (r.note?'<div class="tags">'+esc(r.note)+'</div>':'')+'</div>'+
       '<div class="acts">'+(ed?'<button data-a="sent">'+(r.sent?'Снять отметку':'Отправлен Маляру')+'</button>':'')+
       '<button data-a="pv">Превью</button>'+(ed?'<button data-a="ed">Править</button><button data-a="del">Удалить</button>':'')+'</div>';
@@ -404,6 +451,12 @@ var SUPABASE_KEY = 'sb_publishable_30jxDVu05W_S9x48kOUakA_IGTFfYW0';   // anon /
     });
   }
   function openPv(r){lastBB=bbcode(r);$('#pv').innerHTML=previewHTML(r);$('#bb').value=lastBB;$('#modal').classList.add('on')}
+  function celebrate(){
+    var w=document.createElement('div');w.className='cat';
+    var i=new Image();i.alt='';i.src='koti.webp';i.onerror=function(){w.remove()};
+    w.appendChild(i);document.body.appendChild(w);
+    setTimeout(function(){w.remove()},2800);
+  }
   function copyBB(){
     var ok=function(){toast('BB-код скопирован')};
     function fb(){var t=$('#bb');t.select();try{document.execCommand('copy');ok()}catch(e){toast('Скопируйте вручную')}}
@@ -420,7 +473,7 @@ var SUPABASE_KEY = 'sb_publishable_30jxDVu05W_S9x48kOUakA_IGTFfYW0';   // anon /
     r.id=editId||uid();r.sent=old?!!old.sent:false;r.created=old?old.created:Date.now();
     var dp=(r.date||'').split('-');openSt['y'+dp[0]]=true;openSt['m'+dp[0]+'-'+dp[1]]=true;
     var ok=await persist(r,!editId);
-    if(ok){toast(editId?'Изменения сохранены':'Отчёт сохранён');resetForm(null)}
+    if(ok){toast(editId?'Изменения сохранены':'Отчёт сохранён');celebrate();resetForm(null)}
   };
   $('#closeM').onclick=function(){$('#modal').classList.remove('on')};
   $('#modal').onclick=function(e){if(e.target.id==='modal')$('#modal').classList.remove('on')};
@@ -445,6 +498,7 @@ var SUPABASE_KEY = 'sb_publishable_30jxDVu05W_S9x48kOUakA_IGTFfYW0';   // anon /
   };
   SP.ondblclick=function(){LAY.style.removeProperty('--fw');try{localStorage.removeItem(FW)}catch(e){}};
 
+  (new Image()).src='koti.webp';
   resetForm(null);init();
 })();
 </script>
