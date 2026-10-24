@@ -16,14 +16,13 @@
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.55 Montserrat,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 input,textarea,button{font-family:inherit}
-header{border-bottom:3px solid var(--ab)}
-.hero{background:var(--bd);line-height:0}
-.hero img{display:block;width:100%;height:clamp(110px,26vw,300px);object-fit:cover;object-position:center}
-.titlebar{background:linear-gradient(135deg,#3C454D,#27333B);padding:18px 16px}
+header{max-width:875px;margin:16px auto 0;padding:0 16px}
+.hero{line-height:0;border-radius:16px;overflow:hidden;background:var(--bd);border:1px solid var(--bd);border-bottom:3px solid var(--ab);box-shadow:var(--sh)}
+.hero img{display:block;width:100%;height:auto;aspect-ratio:875/205}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+#authRow{display:none;max-width:1500px;margin:10px auto 0;padding:0 16px;justify-content:flex-end}
 .w{max-width:1500px;margin:0 auto}
-.titlebar .w{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
 h1{font-size:24px;font-weight:700;letter-spacing:-.01em;margin:0}
-header p{margin:4px 0 0;color:var(--mu);font-size:14px}
 main{max-width:1500px;margin:18px auto 0;padding:0 16px 60px}
 .card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:18px;margin-bottom:16px;box-shadow:var(--sh)}
 .card h3{margin:0 0 12px;font-size:16px}
@@ -36,8 +35,8 @@ button.p{background:var(--ab);border-color:var(--ab);color:#fff;font-weight:600}
 button.p:hover{background:var(--abh);border-color:var(--abh)}
 button:focus-visible,summary:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
 button.g{background:none;border-style:dashed;color:var(--mu)}
-header button{background:transparent;border-color:var(--line);color:var(--tx)}
-header button:hover{background:var(--ac2)}
+#authBtn{background:transparent;border-color:var(--line);color:var(--tx);padding:6px 14px;font-size:14px}
+#authBtn:hover{background:var(--ac2)}
 .row{display:flex;gap:10px;flex-wrap:wrap}
 .row>*{flex:1 1 150px}
 .art{border:1px solid var(--bd);border-left:4px solid var(--ab);border-radius:12px;padding:14px;margin:12px 0;background:var(--bg)}
@@ -68,6 +67,7 @@ details.yr>summary{font-weight:700;font-size:18px;padding:8px 4px}
 details.mo{margin:0 0 4px 16px}
 details.mo>summary{font-weight:600;font-size:15px;padding:6px 4px}
 details.mo>.card{margin:6px 0 6px 18px}
+.bar input[type=search]{width:auto;flex:1 1 180px;max-width:280px;padding:6px 14px;border-radius:99px;font-size:14px}
 .cnts{font-size:13px;color:var(--mu);margin:2px 0 8px}
 .cnts:empty{display:none}
 .cnt{font-weight:400;font-size:13px;color:var(--mu);margin-left:10px}
@@ -108,12 +108,10 @@ details.mo>.card{margin:6px 0 6px 18px}
 </head>
 <body>
 <header>
-  <div class="hero"><img src="header.webp" alt="" onerror="this.parentNode.remove()"></div>
-  <div class="titlebar"><div class="w">
-    <div><h1>Отчёты художников</h1><p>Работы сайтовой команды Catwar: создавайте отчёты, следите за отправкой Маляру</p></div>
-    <button id="authBtn" style="display:none">Войти</button>
-  </div></div>
+  <h1 class="sr">Отчёты художников Catwar</h1>
+  <div class="hero"><img src="header.webp" width="875" height="205" alt="" onerror="this.parentNode.remove();document.querySelector('h1').classList.remove('sr')"></div>
 </header>
+<div id="authRow"><button id="authBtn">Войти</button></div>
 
 <main>
   <div class="banner" id="banner" style="display:none"></div>
@@ -122,6 +120,7 @@ details.mo>.card{margin:6px 0 6px 18px}
   <div class="left">
   <div class="bar">
     <h2>Отчёты</h2>
+    <input id="q" type="search" placeholder="Поиск: ID художника, дата, заметка" aria-label="Поиск по отчётам">
     <button class="tab on" data-f="all">Все</button>
     <button class="tab" data-f="no">Не отправлены</button>
     <button class="tab" data-f="yes">Отправлены</button>
@@ -290,7 +289,7 @@ var SUPABASE_KEY = 'sb_publishable_30jxDVu05W_S9x48kOUakA_IGTFfYW0';   // anon /
         sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
         var s=await sb.auth.getSession();session=s.data.session;
         sb.auth.onAuthStateChange(function(_e,ses){session=ses;ui()});
-        $('#authBtn').style.display='';
+        $('#authBtn').style.display='';$('#authRow').style.display='flex';
       }catch(e){sb=null;toast('Supabase недоступен, работаю локально')}
     }
     ui();await fetchAll();
@@ -397,10 +396,10 @@ var SUPABASE_KEY = 'sb_publishable_30jxDVu05W_S9x48kOUakA_IGTFfYW0';   // anon /
   }
 
   /* ---------- список ---------- */
-  var MONTHS=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'],openSt={};
+  var MONTHS=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'],openSt={},searching=false;
   function pl(n){var a=n%10,b=n%100;return a===1&&b!==11?'отчёт':(a>=2&&a<=4&&(b<10||b>=20)?'отчёта':'отчётов')}
   function folder(cls,key,title,arr,open){
-    var d=document.createElement('details');d.className=cls;d.open=(key in openSt)?openSt[key]:open;
+    var d=document.createElement('details');d.className=cls;d.open=searching||((key in openSt)?openSt[key]:open);
     var s=document.createElement('summary'),un=arr.filter(function(r){return !r.sent}).length;
     s.innerHTML=title+'<span class="cnt">'+arr.length+' '+pl(arr.length)+(un?' · не отправлено: '+un:'')+'</span>';
     d.appendChild(s);
@@ -415,10 +414,11 @@ var SUPABASE_KEY = 'sb_publishable_30jxDVu05W_S9x48kOUakA_IGTFfYW0';   // anon /
       (countTypes([].concat.apply([],r.artists.map(function(a){return a.works})))?'<div class="tags">'+esc(countTypes([].concat.apply([],r.artists.map(function(a){return a.works}))))+'</div>':'')+
       (r.note?'<div class="tags">'+esc(r.note)+'</div>':'')+'</div>'+
       '<div class="acts">'+(ed?'<button data-a="sent">'+(r.sent?'Снять отметку':'Отправлен Маляру')+'</button>':'')+
-      '<button data-a="pv">Превью</button>'+(ed?'<button data-a="ed">Править</button><button data-a="del">Удалить</button>':'')+'</div>';
+      '<button data-a="bb">Копировать код</button><button data-a="pv">Превью</button>'+(ed?'<button data-a="ed">Править</button><button data-a="del">Удалить</button>':'')+'</div>';
     d.querySelector('.acts').onclick=function(e){
       var a=e.target.getAttribute&&e.target.getAttribute('data-a');if(!a)return;
       if(a==='sent'){var c=Object.assign({},r,{sent:!r.sent});persist(c,false)}
+      if(a==='bb'){lastBB=bbcode(r);$('#bb').value=lastBB;copyBB()}
       if(a==='pv')openPv(r);
       if(a==='ed'){resetForm(r);window.scrollTo({top:0,behavior:'smooth'})}
       if(a==='del'){var b=e.target;if(b.dataset.sure){remove(r.id);toast('Отчёт удалён')}else{b.dataset.sure=1;b.textContent='Точно удалить?';setTimeout(function(){delete b.dataset.sure;b.textContent='Удалить'},3000)}}
@@ -428,9 +428,13 @@ var SUPABASE_KEY = 'sb_publishable_30jxDVu05W_S9x48kOUakA_IGTFfYW0';   // anon /
   function render(){
     var list=reports.slice().sort(function(a,b){return (b.date||'').localeCompare(a.date||'')||String(b.created||'').localeCompare(String(a.created||''))});
     if(filter==='no')list=list.filter(function(r){return !r.sent});
+    var TN={all:'Все',no:'Не отправлены',yes:'Отправлены'},CN={all:reports.length,no:reports.filter(function(r){return !r.sent}).length,yes:reports.filter(function(r){return r.sent}).length};
+    document.querySelectorAll('.tab').forEach(function(b){b.textContent=TN[b.dataset.f]+' '+CN[b.dataset.f]});
     if(filter==='yes')list=list.filter(function(r){return r.sent});
+    var q=$('#q').value.trim().toLowerCase();searching=!!q;
+    if(q)list=list.filter(function(r){return (r.note||'').toLowerCase().indexOf(q)>-1||fmt(r.date).indexOf(q)>-1||r.artists.some(function(a){return String(a.id).indexOf(q)>-1})});
     var box=$('#list'),ed=canEdit();
-    if(!list.length){box.innerHTML='<div class="empty">'+(reports.length?'В этой вкладке пока пусто':'Пока нет ни одного отчёта')+'</div>';return}
+    if(!list.length){box.innerHTML='<div class="empty">'+(q?'Ничего не найдено':reports.length?'В этой вкладке пока пусто':'Пока нет ни одного отчёта')+'</div>';return}
     box.innerHTML='';
     var years=[],data={};
     list.forEach(function(r){
@@ -478,6 +482,7 @@ var SUPABASE_KEY = 'sb_publishable_30jxDVu05W_S9x48kOUakA_IGTFfYW0';   // anon /
   $('#closeM').onclick=function(){$('#modal').classList.remove('on')};
   $('#modal').onclick=function(e){if(e.target.id==='modal')$('#modal').classList.remove('on')};
   $('#copy').onclick=copyBB;
+  $('#q').oninput=render;
   document.querySelectorAll('.tab').forEach(function(b){b.onclick=function(){filter=b.dataset.f;document.querySelectorAll('.tab').forEach(function(x){x.classList.toggle('on',x===b)});render()}});
   $('#authBtn').onclick=function(){if(session)sb.auth.signOut();else $('#login').classList.add('on')};
   $('#loginCancel').onclick=function(){$('#login').classList.remove('on')};
