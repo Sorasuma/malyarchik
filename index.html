@@ -50,6 +50,8 @@ button.g{background:none;border-style:dashed;color:var(--mu)}
 .wk .x,.pr .x{padding:8px 0;color:var(--mu)}
 @container (max-width:560px){.two{grid-template-columns:1fr}.pr{grid-template-columns:1fr 34px}.pr .pn{grid-column:1 / 3;grid-row:2}.pr .x{grid-row:1;grid-column:2}}
 .hint{font-size:12px;color:var(--mu)}
+.up{display:flex;gap:6px}.up input.wm{flex:1;min-width:0}.up .ub{flex:0 0 auto;padding:8px 10px}
+.wk.drop{border-color:var(--ac);box-shadow:0 0 0 3px var(--ac2)}
 .bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 12px}
 .layout{display:flex;align-items:flex-start}
 .left{flex:1 1 0;min-width:0}
@@ -174,6 +176,7 @@ details.mo>.card{margin:6px 0 6px 18px}
    SQL для создания таблицы смотрите в сообщении Claude. */
 var SUPABASE_URL = 'https://raafdurwxybhyisuacbp.supabase.co';
 var SUPABASE_KEY = 'sb_publishable_30jxDVu05W_S9x48kOUakA_IGTFfYW0';   // anon / publishable ключ
+var BUCKET = 'report-images';   // публичный бакет Supabase Storage для загруженных картинок
 
 (function(){
   var reports=[], sb=null, session=null, filter='all', editId=null, lastBB='';
@@ -321,12 +324,53 @@ var SUPABASE_KEY = 'sb_publishable_30jxDVu05W_S9x48kOUakA_IGTFfYW0';   // anon /
     d.querySelector('.x').onclick=function(){d.remove()};
     return d;
   }
+  async function uploadImg(file,input){
+    if(!sb){toast('Загрузка картинок работает только с подключённым Supabase');return}
+    if(!session){toast('Сначала войдите');return}
+    if(!/^image\/(png|jpeg|webp|gif)$/.test(file.type)){toast('Нужен PNG, JPEG, WebP или GIF');return}
+    if(file.size>15*1024*1024){toast('Файл больше 15 МБ');return}
+    toast('Сжимаю и загружаю…');
+    var f=await squeeze(file);
+    if(f.size>5*1024*1024){toast('Даже после сжатия больше 5 МБ');return}
+    var ext=f.type.split('/')[1].replace('jpeg','jpg');
+    var path=new Date().getFullYear()+'/'+uid()+'.'+ext;
+    var q=await sb.storage.from(BUCKET).upload(path,f,{contentType:f.type,cacheControl:'31536000'});
+    if(q.error){toast('Не загрузилось: '+q.error.message);return}
+    input.value=sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+    input.dispatchEvent(new Event('input',{bubbles:true}));
+    var kb=function(n){return Math.max(1,Math.round(n/1024))+' КБ'};
+    toast(f===file?'Картинка загружена ('+kb(f.size)+')':'Загружено: '+kb(file.size)+' → '+kb(f.size));
+  }
+  /* сжатие: WebP, не крупнее MAXSIDE по длинной стороне; GIF и мелкие файлы не трогаем */
+  var MAXSIDE=2000,QUALITY=0.85,MINSIZE=150*1024;
+  async function squeeze(file){
+    if(file.type==='image/gif'||file.size<MINSIZE)return file;
+    try{
+      var bmp=await createImageBitmap(file,{imageOrientation:'from-image'});
+      var k=Math.min(1,MAXSIDE/Math.max(bmp.width,bmp.height));
+      var w=Math.round(bmp.width*k),h=Math.round(bmp.height*k);
+      var c=document.createElement('canvas');c.width=w;c.height=h;
+      var x=c.getContext('2d');x.imageSmoothingQuality='high';x.drawImage(bmp,0,0,w,h);
+      if(bmp.close)bmp.close();
+      var b=await new Promise(function(r){c.toBlob(r,'image/webp',QUALITY)});
+      if(b&&b.type==='image/webp'&&b.size<file.size*0.9)return b;
+    }catch(e){}
+    return file;
+  }
+  function imgFile(list){return [].slice.call(list||[]).filter(function(f){return /^image\//.test(f.type)})[0]}
   function workRow(w,lastType){
     var d=document.createElement('div');d.className='wk';
     d.innerHTML='<div class="top"><input class="wt" placeholder="Вид работы: костюм, фон…"><button class="x g" title="Убрать работу" style="padding:8px 0">✕</button></div>'+
-      '<div class="two"><input class="wm" placeholder="Ссылка на установленную на сайте: cw3/things/5678.png"><input class="wl" placeholder="Доп. ссылка: https://catwar.su/cw3/things/5678.png"></div>'+
+      '<div class="two"><div class="up"><input class="wm" placeholder="Ссылка на установленную на сайте: cw3/things/5678.png"><button type="button" class="g ub" title="Загрузить картинку с устройства (или вставьте её из буфера в это поле)">📎</button><input type="file" class="uf" accept="image/png,image/jpeg,image/webp,image/gif" hidden></div><input class="wl" placeholder="Доп. ссылка: https://catwar.su/cw3/things/5678.png"></div>'+
       '<div class="prs"></div><button class="g ap" style="padding:5px 10px;font-size:13px;margin-top:8px">+ Доказательство использования</button>';
     var prs=d.querySelector('.prs');
+    var wmI=d.querySelector('.wm'),fi=d.querySelector('.uf');
+    d.querySelector('.ub').onclick=function(){fi.click()};
+    fi.onchange=function(){if(fi.files[0])uploadImg(fi.files[0],wmI);fi.value=''};
+    wmI.addEventListener('paste',function(e){var f=imgFile(e.clipboardData&&e.clipboardData.files);if(f){e.preventDefault();uploadImg(f,wmI)}});
+    d.addEventListener('dragover',function(e){if(e.dataTransfer&&[].indexOf.call(e.dataTransfer.types||[],'Files')>-1){e.preventDefault();d.classList.add('drop')}});
+    d.addEventListener('dragleave',function(){d.classList.remove('drop')});
+    d.addEventListener('drop',function(e){d.classList.remove('drop');var f=imgFile(e.dataTransfer&&e.dataTransfer.files);if(f){e.preventDefault();uploadImg(f,wmI)}});
     d.querySelector('.wt').value=w?w.type:(lastType||'');
     d.querySelector('.wm').value=w?(w.img||''):'';d.querySelector('.wl').value=w?(w.link||''):'';
     ((w&&w.proofs)||[]).forEach(function(p){prs.appendChild(proofRow(p))});
