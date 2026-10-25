@@ -50,6 +50,12 @@ button.g{background:none;border-style:dashed;color:var(--mu)}
 .wk .x,.pr .x{padding:8px 0;color:var(--mu)}
 @container (max-width:560px){.two{grid-template-columns:1fr}.pr{grid-template-columns:1fr 34px}.pr .pn{grid-column:1 / 3;grid-row:2}.pr .x{grid-row:1;grid-column:2}}
 .hint{font-size:12px;color:var(--mu)}
+.sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.sc{background:var(--bg);border:1px solid var(--bd);border-radius:12px;padding:8px;display:flex;flex-direction:column;gap:6px}
+.sc .th{height:120px;display:flex;align-items:center;justify-content:center;background:var(--card);border-radius:8px;overflow:hidden}
+.sc .th img{max-width:100%;max-height:100%;object-fit:contain}
+.sc .nm{font-size:12px;color:var(--mu)}
+.sc .acts button{flex:1 1 auto}
 .up{display:flex;gap:6px}.up input.wm{flex:1;min-width:0}.up .ub{flex:0 0 auto;padding:8px 10px}
 .wk.drop{border-color:var(--ac);box-shadow:0 0 0 3px var(--ac2)}
 .bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 12px}
@@ -74,8 +80,8 @@ details.mo>.card{margin:6px 0 6px 18px}
 .cnts:empty{display:none}
 .cnt{font-weight:400;font-size:13px;color:var(--mu);margin-left:10px}
 .bar h2{font-size:18px;margin:0 auto 0 0}
-.tab{border-radius:99px;padding:5px 14px;font-size:14px}
-.tab.on{background:var(--ac2);border-color:var(--ab);color:var(--ac);font-weight:600}
+.tab,.pill{border-radius:99px;padding:5px 14px;font-size:14px}
+.tab.on,.pill.on{background:var(--ac2);border-color:var(--ab);color:var(--ac);font-weight:600}
 .item{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
 .item .m{flex:1 1 260px;min-width:0}
 .date{font-weight:700;font-size:16px}
@@ -85,8 +91,8 @@ details.mo>.card{margin:6px 0 6px 18px}
 .acts{display:flex;gap:6px;flex-wrap:wrap}
 .acts button{padding:6px 11px;font-size:13px}
 .empty{text-align:center;color:var(--mu);padding:34px 0}
-#modal,#login{position:fixed;inset:0;background:rgba(12,19,23,.75);display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:20px 12px;z-index:5}
-#modal.on,#login.on{display:flex}
+#modal,#login,#store{position:fixed;inset:0;background:rgba(12,19,23,.75);display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:20px 12px;z-index:5}
+#modal.on,#login.on,#store.on{display:flex}
 .box{background:var(--card);border-radius:16px;max-width:720px;width:100%;padding:20px;margin:auto}
 .pv{background:var(--bg);border:1px solid var(--bd);border-radius:12px;padding:16px;margin:12px 0}
 .pv .t{font-size:18px;font-weight:700;margin-bottom:12px}
@@ -126,6 +132,7 @@ details.mo>.card{margin:6px 0 6px 18px}
     <button class="tab on" data-f="all">Все</button>
     <button class="tab" data-f="no">Не отправлены</button>
     <button class="tab" data-f="yes">Отправлены</button>
+    <button id="storeBtn" style="display:none">🗂 Хранилище</button>
   </div>
   <div id="list"></div>
   </div>
@@ -157,6 +164,21 @@ details.mo>.card{margin:6px 0 6px 18px}
   <label for="bb">BB-код</label>
   <textarea id="bb" class="mono" readonly></textarea>
   <div class="row" style="margin-top:10px;justify-content:flex-end"><button class="p" id="copy" style="flex:0 0 auto">Скопировать BB-код</button></div>
+</div></div>
+
+<div id="store"><div class="box" style="max-width:960px">
+  <div class="row" style="justify-content:space-between;align-items:center">
+    <strong>Хранилище картинок</strong><button id="closeS" style="flex:0 0 auto">Закрыть</button>
+  </div>
+  <div class="hint" id="storeInfo" style="margin:10px 0"></div>
+  <div class="bar">
+    <button class="pill on" data-sf="all">Все</button>
+    <button class="pill" data-sf="no">Не используются</button>
+    <span style="flex:1"></span>
+    <button id="storeClean" class="g" style="flex:0 0 auto">Удалить все неиспользуемые</button>
+    <button id="storeRefresh" style="flex:0 0 auto">Обновить</button>
+  </div>
+  <div class="sg" id="storeGrid"></div>
 </div></div>
 
 <div id="login"><div class="box" style="max-width:380px">
@@ -301,6 +323,7 @@ var BUCKET = 'report-images';   // публичный бакет Supabase Storag
     var ed=canEdit();
     $('#formCard').style.display=ed?'':'none';$('#split').style.display=ed?'':'none';
     $('#authBtn').textContent=session?'Выйти':'Войти';
+    $('#storeBtn').style.display=(sb&&session)?'':'none';
     var b=$('#banner');
     if(!sb){b.style.display='';b.textContent='Supabase не подключён: отчёты хранятся только в этом браузере.'}
     else if(!session){b.style.display='';b.textContent='Режим просмотра. Чтобы создавать и менять отчёты, войдите.'}
@@ -510,6 +533,74 @@ var BUCKET = 'report-images';   // публичный бакет Supabase Storag
     function fb(){var t=$('#bb');t.select();try{document.execCommand('copy');ok()}catch(e){toast('Скопируйте вручную')}}
     if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(lastBB).then(ok,fb);else fb();
   }
+
+  /* ---------- хранилище картинок ---------- */
+  var storeFiles=[],storeFilter='all';
+  function fmtSize(n){return n>=1048576?(n/1048576).toFixed(1)+' МБ':Math.max(1,Math.round(n/1024))+' КБ'}
+  function pubUrl(path){return sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl}
+  function usedBlob(){
+    var s=JSON.stringify(reports);
+    document.querySelectorAll('#formCard input').forEach(function(i){s+=' '+i.value});
+    return s;
+  }
+  async function listStore(){
+    var st=sb.storage.from(BUCKET),out=[],opt={limit:1000,sortBy:{column:'created_at',order:'desc'}};
+    var top=await st.list('',opt);if(top.error)throw top.error;
+    for(var i=0;i<top.data.length;i++){
+      var it=top.data[i];
+      if(it.name==='.emptyFolderPlaceholder')continue;
+      if(it.id===null){
+        var r=await st.list(it.name,opt);if(r.error)throw r.error;
+        r.data.forEach(function(f){if(f.id&&f.name!=='.emptyFolderPlaceholder')out.push({path:it.name+'/'+f.name,size:(f.metadata&&f.metadata.size)||0,date:f.created_at})});
+      }else out.push({path:it.name,size:(it.metadata&&it.metadata.size)||0,date:it.created_at});
+    }
+    out.sort(function(a,b){return String(b.date||'').localeCompare(String(a.date||''))});
+    return out;
+  }
+  function renderStore(){
+    var blob=usedBlob();
+    storeFiles.forEach(function(f){f.used=blob.indexOf(f.path)>-1});
+    var un=storeFiles.filter(function(f){return !f.used}),tot=storeFiles.reduce(function(s,f){return s+f.size},0),unS=un.reduce(function(s,f){return s+f.size},0);
+    $('#storeInfo').textContent=storeFiles.length?('Файлов: '+storeFiles.length+' · занято '+fmtSize(tot)+' из 1 ГБ (бесплатный лимит) · не используются: '+un.length+(un.length?' ('+fmtSize(unS)+')':'')):'';
+    var list=storeFilter==='no'?un:storeFiles,g=$('#storeGrid');
+    if(!list.length){g.innerHTML='<div class="empty" style="grid-column:1/-1">'+(storeFiles.length?'Неиспользуемых файлов нет':'В хранилище пока пусто')+'</div>';return}
+    g.innerHTML=list.map(function(f){
+      var d=f.date?new Date(f.date).toLocaleDateString('ru-RU'):'';
+      return '<div class="sc"><div class="th"><img loading="lazy" alt="" src="'+esc(pubUrl(f.path))+'"></div>'+
+        '<div class="nm">'+fmtSize(f.size)+(d?' · '+d:'')+' <span class="badge'+(f.used?' ok':'')+'" style="margin:0">'+(f.used?'используется':'не используется')+'</span></div>'+
+        '<div class="acts"><button data-a="cp" data-p="'+esc(f.path)+'">Ссылка</button><button data-a="del" data-p="'+esc(f.path)+'"'+(f.used?' data-u="1"':'')+'>Удалить</button></div></div>';
+    }).join('');
+  }
+  async function openStore(){
+    $('#store').classList.add('on');$('#storeInfo').textContent='Загружаю список…';
+    try{storeFiles=await listStore();renderStore()}
+    catch(e){$('#storeInfo').textContent='';$('#storeGrid').innerHTML='';toast('Не удалось получить список: '+(e.message||e)+'. Запустите storage-setup.sql ещё раз')}
+  }
+  async function delFiles(paths){
+    var q=await sb.storage.from(BUCKET).remove(paths);
+    if(q.error){toast('Не удалилось: '+q.error.message);return}
+    var n=(q.data||[]).length;
+    toast(n<paths.length?'Удалилось '+n+' из '+paths.length+': проверьте права (storage-setup.sql)':'Удалено: '+n);
+    await openStore();
+  }
+  function twoStep(b,askText,backText,ms){b.dataset.sure=1;b.textContent=askText;setTimeout(function(){delete b.dataset.sure;b.textContent=backText},ms)}
+  $('#storeBtn').onclick=openStore;
+  $('#storeRefresh').onclick=openStore;
+  $('#closeS').onclick=function(){$('#store').classList.remove('on')};
+  $('#store').onclick=function(e){if(e.target.id==='store')$('#store').classList.remove('on')};
+  document.querySelectorAll('.pill').forEach(function(b){b.onclick=function(){storeFilter=b.dataset.sf;document.querySelectorAll('.pill').forEach(function(x){x.classList.toggle('on',x===b)});renderStore()}});
+  $('#storeGrid').onclick=function(e){
+    var b=e.target.closest&&e.target.closest('button');if(!b)return;
+    var a=b.dataset.a,p=b.dataset.p;
+    if(a==='cp'){var u=pubUrl(p);if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(u).then(function(){toast('Ссылка скопирована')},function(){toast(u)});else toast(u)}
+    if(a==='del'){if(b.dataset.sure)delFiles([p]);else twoStep(b,b.dataset.u?'Используется! Удалить?':'Точно?','Удалить',3500)}
+  };
+  $('#storeClean').onclick=function(){
+    var b=this,un=storeFiles.filter(function(f){return !f.used});
+    if(!un.length){toast('Неиспользуемых файлов нет');return}
+    if(b.dataset.sure)delFiles(un.map(function(f){return f.path}));
+    else twoStep(b,'Точно удалить '+un.length+'?','Удалить все неиспользуемые',3500);
+  };
 
   /* ---------- события ---------- */
   $('#addArt').onclick=function(){$('#arts').appendChild(artBlock(null))};
